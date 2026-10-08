@@ -1,0 +1,43 @@
+package com.codesapp.searchengine;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.List;
+
+public class SearchResultAdapter extends ArrayAdapter<SearchResult> {
+
+    public SearchResultAdapter(Context context, List<SearchResult> results) {
+        super(context, 0, results);
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        View itemView = convertView;
+        if (itemView == null) {
+            itemView = LayoutInflater.from(getContext()).inflate(R.layout.item_search_result, parent, false);
+        }
+
+        SearchResult result = getItem(position);
+
+        TextView titleText = itemView.findViewById(R.id.resultTitle);
+        TextView categoryText = itemView.findViewById(R.id.resultCategory);
+        TextView descriptionText = itemView.findViewById(R.id.resultDescription);
+
+        if (result != null) {
+            titleText.setText(result.getTitle());
+            categoryText.setText(result.getCategory());
+            descriptionText.setText(result.getDescription());
+        }
+
+        return itemView;
+    }
+}

@@ -1,0 +1,215 @@
+package com.codesapp.searchengine;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "CodesApp.db";
+    private static final int DATABASE_VERSION = 1;
+
+    // Table names
+    private static final String TABLE_ITEMS = "items";
+    private static final String TABLE_HISTORY = "history";
+    private static final String TABLE_FAVORITES = "favorites";
+
+    // Columns for items
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_TITLE = "title";
+    private static final String COLUMN_DESCRIPTION = "description";
+    private static final String COLUMN_CATEGORY = "category";
+
+    // Columns for history
+    private static final String COLUMN_QUERY = "query";
+    private static final String COLUMN_TIMESTAMP = "timestamp";
+
+    // Columns for favorites
+    private static final String COLUMN_FAV_QUERY = "query";
+    private static final String COLUMN_FAV_DATE = "date_added";
+
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + TABLE_ITEMS + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_TITLE + " TEXT NOT NULL, " +
+                COLUMN_DESCRIPTION + " TEXT, " +
+                COLUMN_CATEGORY + " TEXT)"
+        );
+
+        db.execSQL("CREATE TABLE " + TABLE_HISTORY + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_QUERY + " TEXT NOT NULL, " +
+                COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        );
+
+        db.execSQL("CREATE TABLE " + TABLE_FAVORITES + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_FAV_QUERY + " TEXT NOT NULL UNIQUE, " +
+                COLUMN_FAV_DATE + " DATETIME DEFAULT CURRENT_TIMESTAMP)"
+        );
+
+        insertSampleData(db);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HISTORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITES);
+        onCreate(db);
+    }
+
+    private void insertSampleData(SQLiteDatabase db) {
+        String[][] sampleData = {
+                {"Android Development", "Learn mobile app creation on Android", "Development"},
+                {"Android Studio", "Official IDE for Android apps", "Tools"},
+                {"Android SDK", "Software Development Kit for Android", "Tools"},
+                {"Android Emulator", "Run Android apps in a virtual device", "Tools"},
+                {"Android Activity", "The main screen and UI container", "Core"},
+                {"Android Fragment", "Reusable UI component in Android", "Core"},
+                {"Android Intent", "Message to request an action", "Core"},
+                {"Android Manifest", "Project configuration file", "Core"},
+                {"Android SQLite", "Lightweight local database", "Database"},
+                {"Android SharedPreferences", "Simple key-value storage", "Storage"},
+                {"Android Layout", "Defines the screen structure", "UI"},
+                {"Android RecyclerView", "Efficient list and grid UI", "UI"},
+                {"Android Material Design", "Modern design guidelines", "UI"},
+                {"Android Firebase", "Google backend tools", "Backend"},
+                {"Android API", "Application Programming Interface", "Development"},
+                {"Android Notifications", "Message alerts for the app", "UI"},
+                {"Android Permissions", "Access rights to system features", "Security"},
+                {"Android Services", "Background execution tasks", "Core"},
+                {"Android Security", "Protect app and user data", "Security"},
+                {"Java Programming", "General-purpose programming language", "Language"},
+                {"Kotlin Language", "Modern Android language", "Language"},
+                {"SQL Queries", "Interact with relational databases", "Database"},
+                {"GitHub", "Platform for code hosting and collaboration", "Tools"},
+                {"Git", "Version control system", "Tools"},
+                {"Python Programming", "General scripting and backend language", "Language"},
+                {"JavaScript", "Web scripting language", "Language"},
+                {"HTML", "Markup language for web pages", "Web"},
+                {"CSS", "Styles web pages", "Web"},
+                {"Node.js", "JavaScript runtime", "Web"},
+                {"Firebase", "Cloud development platform", "Backend"},
+                {"Database Design", "Designing schemas and tables", "Database"},
+                {"API Integration", "Connect with external services", "Development"},
+                {"UI/UX Design", "Designing app experiences", "UI"},
+                {"App Publishing", "Release app to stores", "Deployment"}
+        };
+
+        for (String[] item : sampleData) {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_TITLE, item[0]);
+            values.put(COLUMN_DESCRIPTION, item[1]);
+            values.put(COLUMN_CATEGORY, item[2]);
+            db.insert(TABLE_ITEMS, null, values);
+        }
+    }
+
+    public List<SearchResult> searchItems(String query) {
+        List<SearchResult> results = new ArrayList<>();
+        if (query == null || query.trim().isEmpty()) {
+            return results;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT title, description, category FROM " + TABLE_ITEMS +
+                " WHERE title LIKE ? OR description LIKE ? OR category LIKE ? ORDER BY title ASC";
+        String pattern = "%" + query.trim() + "%";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{pattern, pattern, pattern});
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION));
+                String category = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY));
+                results.add(new SearchResult(title, description, category));
+            }
+            cursor.close();
+        }
+        return results;
+    }
+
+    public void addToHistory(String query) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_QUERY, query.trim());
+        db.insert(TABLE_HISTORY, null, values);
+    }
+
+    public List<String> getHistory() {
+        List<String> history = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT query FROM " + TABLE_HISTORY + " ORDER BY timestamp DESC LIMIT 20", null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                history.add(cursor.getString(0));
+            }
+            cursor.close();
+        }
+        return history;
+    }
+
+    public void clearHistory() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_HISTORY, null, null);
+    }
+
+    public void addToFavorites(String query) {
+        if (query == null || query.trim().isEmpty()) return;
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FAV_QUERY, query.trim());
+        try {
+            db.insertOrThrow(TABLE_FAVORITES, null, values);
+        } catch (Exception ignored) {
+            // Already exists
+        }
+    }
+
+    public boolean isFavorite(String query) {
+        if (query == null || query.trim().isEmpty()) return false;
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT 1 FROM " + TABLE_FAVORITES + " WHERE query = ? LIMIT 1",
+                new String[]{query.trim()});
+        boolean exists = cursor != null && cursor.moveToFirst();
+        if (cursor != null) cursor.close();
+        return exists;
+    }
+
+    public List<String> getFavorites() {
+        List<String> favorites = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT query FROM " + TABLE_FAVORITES + " ORDER BY date_added DESC", null);
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                favorites.add(cursor.getString(0));
+            }
+            cursor.close();
+        }
+        return favorites;
+    }
+
+    public void removeFromFavorites(String query) {
+        if (query == null || query.trim().isEmpty()) return;
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_FAVORITES, "query = ?", new String[]{query.trim()});
+    }
+
+    public void clearFavorites() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_FAVORITES, null, null);
+    }
+}
