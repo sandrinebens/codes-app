@@ -3,108 +3,180 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@color/white">
+    android:background="#F9FAFC"
+    android:padding="0dp">
 
-    <!-- Title -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Codes App - Search Engine"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:gravity="center"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Search Input -->
-    <EditText
-        android:id="@+id/searchInput"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Enter your search query"
-        android:padding="12dp"
-        android:textSize="16sp"
-        android:background="@drawable/search_input_bg"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Button Container -->
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="16dp">
+        android:orientation="vertical"
+        android:background="#1E88E5"
+        android:padding="16dp">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/searchButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="Search"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔍 Codes Search"
+            android:textSize="32sp"
+            android:textStyle="bold"
             android:textColor="@color/white"
-            android:backgroundTint="@color/blue"
-            android:layout_marginEnd="4dp" />
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
 
-        <ImageButton
-            android:id="@+id/favButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_add"
-            android:contentDescription="Add to Favorites"
-            android:background="@drawable/button_bg"
-            android:layout_marginEnd="4dp" />
-
-        <ImageButton
-            android:id="@+id/historyButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_recent_history"
-            android:contentDescription="Show History"
-            android:background="@drawable/button_bg"
-            android:layout_marginEnd="4dp" />
-
-        <ImageButton
-            android:id="@+id/favListButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_view"
-            android:contentDescription="Show Favorites"
-            android:background="@drawable/button_bg"
-            android:layout_marginEnd="4dp" />
-
-        <ImageButton
-            android:id="@+id/clearHistoryButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="Clear History"
-            android:background="@drawable/button_bg" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Search topics, tools & programming concepts"
+            android:textSize="12sp"
+            android:textColor="#E3F2FD"
+            android:gravity="center" />
 
     </LinearLayout>
 
-    <!-- WebView for search results -->
-    <WebView
-        android:id="@+id/webView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="8dp" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <!-- History ListView (Hidden by default) -->
-    <ListView
-        android:id="@+id/historyListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"
-        android:layout_marginBottom="8dp" />
+        <!-- Search Input Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp">
 
-    <!-- Favorites ListView (Hidden by default) -->
-    <ListView
-        android:id="@+id/favoritesListView"
+            <EditText
+                android:id="@+id/searchInput"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="Type to search..."
+                android:padding="16dp"
+                android:background="@drawable/search_input_bg"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/gray"
+                android:inputType="text" />
+
+        </LinearLayout>
+
+        <!-- Result Count -->
+        <TextView
+            android:id="@+id/resultCountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0 results"
+            android:textColor="#1976D2"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="8dp" />
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/favButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_add"
+                android:contentDescription="Add to favorites"
+                android:background="@drawable/button_bg"
+                android:scaleType="centerInside"
+                android:tint="@color/white"
+                android:layout_marginEnd="6dp" />
+
+            <ImageButton
+                android:id="@+id/historyButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_recent_history"
+                android:contentDescription="Show history"
+                android:background="@drawable/button_bg"
+                android:scaleType="centerInside"
+                android:tint="@color/white"
+                android:layout_marginEnd="6dp" />
+
+            <ImageButton
+                android:id="@+id/favListButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_view"
+                android:contentDescription="Show favorites"
+                android:background="@drawable/button_bg"
+                android:scaleType="centerInside"
+                android:tint="@color/white"
+                android:layout_marginEnd="6dp" />
+
+            <ImageButton
+                android:id="@+id/clearHistoryButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_delete"
+                android:contentDescription="Clear history"
+                android:background="@drawable/button_bg"
+                android:scaleType="centerInside"
+                android:tint="@color/white"
+                android:layout_marginEnd="6dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/searchButton"
+                android:layout_width="110dp"
+                android:layout_height="48dp"
+                android:text="Search"
+                android:textColor="@color/white"
+                android:backgroundTint="#1E88E5"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Results List -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:visibility="gone" />
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
+
+        <ListView
+            android:id="@+id/resultsListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:visibility="visible" />
+
+        <ListView
+            android:id="@+id/historyListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/favoritesListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
 </LinearLayout>
